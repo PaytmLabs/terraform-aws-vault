@@ -1,9 +1,11 @@
 {
   "min_packer_version": "1.2.0",
   "variables": {
+    "consul_domain" : "inner-route.com",
+    "github_fork" : "PaytmLabs",
     "aws_region": "us-west-2",
     "vault_version": "0.9.3",
-    "consul_module_version": "v0.2.2",
+    "consul_module_version": "master",
     "consul_version": "1.0.2",
     "github_oauth_token": "{{env `GITHUB_OAUTH_TOKEN`}}",
     "ca_public_key_path": "{{template_dir}}/tls/ca.crt.pem",
@@ -60,8 +62,7 @@
       "sudo mv /tmp/vault.key.pem /opt/vault/tls/",
       "sudo chown -R vault:vault /opt/vault/tls/",
       "sudo chmod -R 600 /opt/vault/tls",
-      "sudo chmod 700 /opt/vault/tls",
-      "sudo /tmp/terraform-aws-vault/modules/update-certificate-store/update-certificate-store --cert-file-path /opt/vault/tls/ca.crt.pem"
+      "sudo chmod 700 /opt/vault/tls"
     ]
   },{
     "type": "shell",
@@ -72,9 +73,9 @@
   },{
     "type": "shell",
     "inline": [
-      "git clone --branch {{user `consul_module_version`}} https://{{user `github_oauth_token`}}@github.com/hashicorp/terraform-aws-consul.git /tmp/terraform-aws-consul",
+      "git clone --branch {{user `consul_module_version`}} https://{{user `github_oauth_token`}}@github.com/{{user `github_fork`}}/terraform-aws-consul.git /tmp/terraform-aws-consul",
       "/tmp/terraform-aws-consul/modules/install-consul/install-consul --version {{user `consul_version`}}",
-      "/tmp/terraform-aws-consul/modules/install-dnsmasq/install-dnsmasq"
+      "/tmp/terraform-aws-consul/modules/install-dnsmasq/install-dnsmasq --consul-domain {{user `consul_domain`}}"
     ]
   }]
 }
